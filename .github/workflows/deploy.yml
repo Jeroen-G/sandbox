@@ -1,0 +1,37 @@
+name: "Native deploy"
+
+# To do: build and submit production
+
+on:
+  workflow_dispatch:
+    inputs:
+      app_profile:
+        description: 'Build profile'
+        required: true
+        type: choice
+        options:
+          - preview
+
+jobs:
+ deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - name: 🏗 Setup repo
+        uses: actions/checkout@v2
+
+      - name: 🏗 Setup Expo
+        uses: expo/expo-github-action@v8
+        with:
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.EXPO_TOKEN }}
+          packager: yarn
+
+      - name: 📦 Install dependencies
+        run: yarn install --frozen-lockfile
+
+      - name: 📲 Deploy native app via EAS
+        run: yarn run deploy:${{ github.event.inputs.app_profile }}
+
+      - name: 🌐 Deploy web app to EAS hosting
+        run: yarn run deploy:web:${{ github.event.inputs.app_profile }}
