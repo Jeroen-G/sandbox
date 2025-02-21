@@ -14,7 +14,8 @@
     "doctor": "EXPO_DOCTOR_ENABLE_DIRECTORY_CHECK=0 bunx expo-doctor",
     "dangerous:update": "bunx expo install --check",
     "deploy:preview": "eas build --profile=preview --platform=android --non-interactive",
-    "push:preview": "eas update --branch=preview --non-interactive --auto"
+    "push:preview": "eas update --branch=preview --non-interactive --auto",
+    "deploy:web:preview": "npx expo export --platform web && eas deploy --non-interactive --alias=preview"
   },
   "jest": {
     "preset": "jest-expo"
