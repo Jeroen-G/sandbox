@@ -1,5 +1,6 @@
+import { Link } from 'expo-router';
 import React from 'react';
-import { Text, View } from 'react-native';
+import { Button, View } from 'react-native';
 
 export default function Index() {
     return (
@@ -9,7 +10,9 @@ export default function Index() {
                 justifyContent: 'center',
                 alignItems: 'center',
             }}>
-            <Text>Edit app/index.tsx to edit this screen.</Text>
+            <Link href="/avatar" asChild>
+                <Button title="Avatar animating on scroll" />
+            </Link>
         </View>
     );
 }
