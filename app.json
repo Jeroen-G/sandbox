@@ -46,6 +46,12 @@
         "projectId": "1f00f7bd-50eb-4b5a-bc36-f231fd8cc856"
       }
     },
-    "owner": "jgroenendijk"
+    "owner": "jgroenendijk",
+    "runtimeVersion": {
+      "policy": "appVersion"
+    },
+    "updates": {
+      "url": "https://u.expo.dev/1f00f7bd-50eb-4b5a-bc36-f231fd8cc856"
+    }
   }
 }
