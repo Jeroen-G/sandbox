@@ -1,4 +1,3 @@
-import { useHeaderHeight } from '@react-navigation/elements';
 import { Stack as RouterStack } from 'expo-router';
 import React from 'react';
 import { Dimensions, StyleSheet, Text, View } from 'react-native';
@@ -21,7 +20,6 @@ export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
-    const headerHeight = useHeaderHeight();
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -32,7 +30,7 @@ export function Avatar() {
             height: interpolate(
                 Number(translationY.value),
                 [height / 10, height / 2],
-                [0, headerHeight + top + imageHeaderHeight + headerPaddingVertical],
+                [0, top + imageHeaderHeight + headerPaddingVertical],
                 Extrapolation.CLAMP
             ),
             opacity: interpolate(
