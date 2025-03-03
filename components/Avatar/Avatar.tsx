@@ -1,6 +1,6 @@
 import { Stack as RouterStack } from 'expo-router';
 import React from 'react';
-import { Dimensions, StyleSheet, Text, View } from 'react-native';
+import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
 import Animated, {
     Extrapolation,
     interpolate,
@@ -42,6 +42,19 @@ export function Avatar() {
         };
     });
 
+    const imageAnimatedStyle = useAnimatedStyle(() => {
+        const interpolation = interpolate(
+            translationY.value,
+            [height / 3, height / 2],
+            [0, 1],
+            Extrapolation.CLAMP
+        );
+        const hardSwitch = translationY.value >= height / 2 ? 1 : 0;
+        return {
+            opacity: Platform.OS === 'android' ? hardSwitch : interpolation,
+        };
+    });
+
     return (
         <Animated.ScrollView contentContainerStyle={styles.screen} onScroll={scrollHandler}>
             <RouterStack.Screen
@@ -54,9 +67,10 @@ export function Avatar() {
                                 { paddingTop: top },
                                 headerAnimatedStyle,
                             ]}>
-                            <View style={styles.headerImageContainer}>
+                            <Animated.View
+                                style={[styles.headerImageContainer, imageAnimatedStyle]}>
                                 <Image size={imageHeaderHeight} />
-                            </View>
+                            </Animated.View>
                             <View style={styles.headerTitleContainer}>
                                 <Text style={styles.headerTitle}>Albus</Text>
                             </View>
@@ -76,6 +90,7 @@ export function Avatar() {
 const styles = StyleSheet.create({
     screen: {
         padding: 40,
+        paddingBottom: 200,
         backgroundColor: '#fff',
         gap: 20,
     },
