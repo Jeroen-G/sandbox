@@ -12,6 +12,10 @@ const menu: Array<{ link: Href; title: string }> = [
         link: '/buttons',
         title: 'Morphing buttons',
     },
+    {
+        link: '/_sitemap',
+        title: 'Sitemap',
+    },
 ];
 
 export default function Index() {
