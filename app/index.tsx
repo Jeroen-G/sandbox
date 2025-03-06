@@ -12,6 +12,10 @@ const menu: Array<{ link: Href; title: string }> = [
         link: '/buttons',
         title: 'Morphing buttons',
     },
+    {
+        link: '/transitions/first',
+        title: 'Shared Element Transitions',
+    },
 ];
 
 export default function Index() {
