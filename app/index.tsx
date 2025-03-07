@@ -5,6 +5,10 @@ import { Button, View } from 'react-native';
 
 const menu: Array<{ link: Href; title: string }> = [
     {
+        link: '/apiroutes',
+        title: 'API Routes and fuzzy search',
+    },
+    {
         link: '/avatar',
         title: 'Avatar animating on scroll',
     },
