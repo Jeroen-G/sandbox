@@ -10,8 +10,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Image } from '@/components/Avatar/Image';
 import { Profile } from '@/components/Avatar/Profile';
+import { Image } from '@/components/Image/Image';
 
 const imageHeaderHeight = 100;
 const headerPaddingVertical = 20;
@@ -80,7 +80,7 @@ export function Avatar() {
             />
             <Text style={styles.headerTitle}>Albus</Text>
             <View style={styles.image}>
-                <Image size={200} />
+                <Image size={200} source={require('@/assets/albus.gif')} />
             </View>
             <Profile />
         </Animated.ScrollView>
