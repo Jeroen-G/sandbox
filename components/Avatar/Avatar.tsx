@@ -69,7 +69,10 @@ export function Avatar() {
                             ]}>
                             <Animated.View
                                 style={[styles.headerImageContainer, imageAnimatedStyle]}>
-                                <Image size={imageHeaderHeight} />
+                                <Image
+                                    size={imageHeaderHeight}
+                                    source={require('@/assets/albus.gif')}
+                                />
                             </Animated.View>
                             <View style={styles.headerTitleContainer}>
                                 <Text style={styles.headerTitle}>Albus</Text>
