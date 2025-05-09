@@ -1,7 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { use } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
-type Details = {
+export type Details = {
     name: string;
     patronus: string;
     born: string;
@@ -26,30 +26,8 @@ function Card({ title, text }: { title: string; text: string | string[] }) {
     );
 }
 
-export function Profile() {
-    const [details, setDetails] = useState<Details>();
-
-    useEffect(() => {
-        void (async () => {
-            const data = await fetch(
-                'https://api.potterdb.com/v1/characters/a57de83d-2a44-40d4-8060-75895fa756f5'
-            );
-
-            const details: Details = (await data.json())['data']['attributes'];
-
-            setDetails({
-                name: details.name,
-                born: details.born,
-                died: details.died,
-                family_members: details.family_members,
-                house: details.house,
-                wands: details.wands,
-                patronus: details.patronus,
-                titles: details.titles,
-                jobs: details.jobs,
-            });
-        })();
-    }, []);
+export function Profile({ promisedProfile }: { promisedProfile: Promise<Details> }) {
+    const details: Details = use(promisedProfile);
 
     return (
         <View style={styles.list}>

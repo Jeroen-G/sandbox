@@ -1,6 +1,14 @@
 import { Stack as RouterStack } from 'expo-router';
-import React from 'react';
-import { Dimensions, Platform, StyleSheet, Text, View } from 'react-native';
+import React, { Suspense, useState } from 'react';
+import {
+    ActivityIndicator,
+    Dimensions,
+    Platform,
+    RefreshControl,
+    StyleSheet,
+    Text,
+    View,
+} from 'react-native';
 import Animated, {
     Extrapolation,
     interpolate,
@@ -10,7 +18,8 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Profile } from '@/components/Avatar/Profile';
+import { Details, Profile } from '@/components/Avatar/Profile';
+import { promisedProfile } from '@/components/Avatar/promisedProfile';
 import { Image } from '@/components/Image/Image';
 
 const imageHeaderHeight = 100;
@@ -20,6 +29,8 @@ export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
+    const [myProfile, setMyProfile] = useState<Promise<Details>>(promisedProfile());
+    const [refreshing, setRefreshing] = useState(false);
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -56,7 +67,19 @@ export function Avatar() {
     });
 
     return (
-        <Animated.ScrollView contentContainerStyle={styles.screen} onScroll={scrollHandler}>
+        <Animated.ScrollView
+            contentContainerStyle={styles.screen}
+            onScroll={scrollHandler}
+            refreshControl={
+                <RefreshControl
+                    refreshing={refreshing}
+                    onRefresh={() => {
+                        setRefreshing(true);
+                        setMyProfile(promisedProfile());
+                        setRefreshing(false);
+                    }}
+                />
+            }>
             <RouterStack.Screen
                 options={{
                     contentStyle: { backgroundColor: '#fff' },
@@ -85,7 +108,9 @@ export function Avatar() {
             <View style={styles.image}>
                 <Image size={200} source={require('@/assets/albus.gif')} />
             </View>
-            <Profile />
+            <Suspense fallback={<ActivityIndicator />}>
+                <Profile promisedProfile={myProfile} />
+            </Suspense>
         </Animated.ScrollView>
     );
 }
