@@ -1,5 +1,5 @@
 import { Stack as RouterStack } from 'expo-router';
-import React, { Suspense, useState } from 'react';
+import React, { Suspense } from 'react';
 import {
     ActivityIndicator,
     Dimensions,
@@ -21,6 +21,7 @@ import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import { Details, Profile } from '@/components/Avatar/Profile';
 import { promisedProfile } from '@/components/Avatar/promisedProfile';
 import { Image } from '@/components/Image/Image';
+import { useJar } from '@/hooks/useJar';
 
 const imageHeaderHeight = 100;
 const headerPaddingVertical = 20;
@@ -29,8 +30,7 @@ export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
-    const [myProfile, setMyProfile] = useState<Promise<Details>>(promisedProfile());
-    const [refreshing, setRefreshing] = useState(false);
+    const { data: myProfile, refresh, refreshing } = useJar<Details>(promisedProfile);
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -70,16 +70,7 @@ export function Avatar() {
         <Animated.ScrollView
             contentContainerStyle={styles.screen}
             onScroll={scrollHandler}
-            refreshControl={
-                <RefreshControl
-                    refreshing={refreshing}
-                    onRefresh={() => {
-                        setRefreshing(true);
-                        setMyProfile(promisedProfile());
-                        setRefreshing(false);
-                    }}
-                />
-            }>
+            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
             <RouterStack.Screen
                 options={{
                     contentStyle: { backgroundColor: '#fff' },
