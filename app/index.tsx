@@ -17,6 +17,10 @@ const menu: Array<{ link: Href; title: string }> = [
         title: 'Morphing buttons',
     },
     {
+        link: '/books',
+        title: 'Books',
+    },
+    {
         link: '/_sitemap',
         title: 'Sitemap',
     },
