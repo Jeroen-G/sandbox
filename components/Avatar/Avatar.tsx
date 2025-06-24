@@ -2,6 +2,7 @@ import { Stack as RouterStack } from 'expo-router';
 import React, { Suspense } from 'react';
 import {
     ActivityIndicator,
+    Button,
     Dimensions,
     Platform,
     RefreshControl,
@@ -17,20 +18,68 @@ import Animated, {
     useSharedValue,
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
+import useSWR from 'swr';
+import useSWRMutation from 'swr/mutation';
 
 import { Details, Profile } from '@/components/Avatar/Profile';
-import { promisedProfile } from '@/components/Avatar/promisedProfile';
 import { Image } from '@/components/Image/Image';
-import { useJar } from '@/hooks/useJar';
 
 const imageHeaderHeight = 100;
 const headerPaddingVertical = 20;
+
+const fetcher = async (
+    resource: string | Request,
+    init: RequestInit | undefined
+): Promise<Details> => {
+    const res = await fetch(resource, init);
+    const data = await res.json();
+    const details = data.data.attributes;
+
+    console.log('FETCHER!');
+
+    return {
+        name: details.name,
+        born: details.born,
+        died: details.died,
+        family_members: details.family_members,
+        house: details.house,
+        wands: details.wands,
+        patronus: details.patronus,
+        titles: details.titles,
+        jobs: details.jobs,
+    };
+};
+
+async function sendRequest(url: string, { arg }: { arg: { name: string } }) {
+    const res = await fetch(url, {
+        method: 'POST',
+        body: JSON.stringify(arg),
+    });
+
+    const data = await res.json();
+
+    console.log('POSTED!', data.data);
+
+    // throw new Error('OH NO');
+}
 
 export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
-    const { data: myProfile, refresh, refreshing } = useJar<Details>(promisedProfile);
+    const {
+        data: myProfile,
+        isLoading: refreshing,
+        mutate: refresh,
+    } = useSWR(
+        'https://api.potterdb.com/v1/characters/6aaf667f-246f-486d-90c8-4424651a92bb',
+        fetcher
+    );
+
+    const { trigger, isMutating, error } = useSWRMutation(
+        'https://httpbin.org/anything',
+        sendRequest
+    );
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -66,6 +115,14 @@ export function Avatar() {
         };
     });
 
+    if (!myProfile) {
+        return null;
+    }
+
+    if (error) {
+        throw error;
+    }
+
     return (
         <Animated.ScrollView
             contentContainerStyle={styles.screen}
@@ -100,7 +157,14 @@ export function Avatar() {
                 <Image size={200} source={require('@/assets/albus.gif')} />
             </View>
             <Suspense fallback={<ActivityIndicator />}>
-                <Profile promisedProfile={myProfile} />
+                <Button
+                    title="POST"
+                    disabled={isMutating}
+                    onPress={async () => {
+                        await trigger({ name: myProfile?.name ?? 'none' });
+                    }}
+                />
+                <Profile details={myProfile} />
             </Suspense>
         </Animated.ScrollView>
     );

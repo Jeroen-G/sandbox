@@ -55,7 +55,8 @@
     "react-native-safe-area-context": "5.4.0",
     "react-native-screens": "~4.10.0",
     "react-native-web": "^0.20.0",
-    "react-native-webview": "13.13.5"
+    "react-native-webview": "13.13.5",
+    "swr": "^2.3.3"
   },
   "devDependencies": {
     "@babel/core": "^7.25.2",
