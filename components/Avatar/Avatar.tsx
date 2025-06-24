@@ -30,7 +30,7 @@ export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
-    const { data: myProfile, refresh, refreshing } = useJar<Details>(promisedProfile);
+    const { data: myProfile, refresh, isRefreshing } = useJar<Details>(promisedProfile);
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -70,7 +70,7 @@ export function Avatar() {
         <Animated.ScrollView
             contentContainerStyle={styles.screen}
             onScroll={scrollHandler}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+            refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}>
             <RouterStack.Screen
                 options={{
                     contentStyle: { backgroundColor: '#fff' },
