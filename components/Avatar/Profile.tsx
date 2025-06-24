@@ -1,4 +1,4 @@
-import React, { use } from 'react';
+import React from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 export type Details = {
@@ -26,9 +26,7 @@ function Card({ title, text }: { title: string; text: string | string[] }) {
     );
 }
 
-export function Profile({ promisedProfile }: { promisedProfile: Promise<Details> }) {
-    const details: Details = use(promisedProfile);
-
+export function Profile({ details }: { details: Details }) {
     return (
         <View style={styles.list}>
             {details &&

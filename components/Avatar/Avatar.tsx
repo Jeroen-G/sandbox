@@ -2,6 +2,7 @@ import { Stack as RouterStack } from 'expo-router';
 import React, { Suspense } from 'react';
 import {
     ActivityIndicator,
+    Button,
     Dimensions,
     Platform,
     RefreshControl,
@@ -18,10 +19,9 @@ import Animated, {
 } from 'react-native-reanimated';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 
-import { Details, Profile } from '@/components/Avatar/Profile';
-import { promisedProfile } from '@/components/Avatar/promisedProfile';
+import { Profile } from '@/components/Avatar/Profile';
+import { useAlbus, usePostAlbus } from '@/components/Avatar/useAlbus';
 import { Image } from '@/components/Image/Image';
-import { useJar } from '@/hooks/useJar';
 
 const imageHeaderHeight = 100;
 const headerPaddingVertical = 20;
@@ -30,7 +30,8 @@ export function Avatar() {
     const height = Dimensions.get('window').height;
     const translationY = useSharedValue(0);
     const { top } = useSafeAreaInsets();
-    const { data: myProfile, refresh, refreshing } = useJar<Details>(promisedProfile);
+    const { myProfile, refresh, isRefreshing } = useAlbus();
+    const { trigger, isRefreshing: isRefreshingPost, error } = usePostAlbus();
 
     const scrollHandler = useAnimatedScrollHandler(event => {
         translationY.value = event.contentOffset.y;
@@ -66,11 +67,19 @@ export function Avatar() {
         };
     });
 
+    if (!myProfile) {
+        return null;
+    }
+
+    if (error) {
+        throw error;
+    }
+
     return (
         <Animated.ScrollView
             contentContainerStyle={styles.screen}
             onScroll={scrollHandler}
-            refreshControl={<RefreshControl refreshing={refreshing} onRefresh={refresh} />}>
+            refreshControl={<RefreshControl refreshing={isRefreshing} onRefresh={refresh} />}>
             <RouterStack.Screen
                 options={{
                     contentStyle: { backgroundColor: '#fff' },
@@ -100,7 +109,14 @@ export function Avatar() {
                 <Image size={200} source={require('@/assets/albus.gif')} />
             </View>
             <Suspense fallback={<ActivityIndicator />}>
-                <Profile promisedProfile={myProfile} />
+                <Button
+                    title="POST"
+                    disabled={isRefreshingPost}
+                    onPress={async () => {
+                        await trigger({ name: myProfile?.name ?? 'none' });
+                    }}
+                />
+                <Profile details={myProfile} />
             </Suspense>
         </Animated.ScrollView>
     );
