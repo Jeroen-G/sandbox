@@ -9,7 +9,9 @@ export type Jar<T> = {
     data: Promise<T>;
 };
 
-export function useJar<T>(promised: () => Promise<T>, initialData?: T): Jar<T> {
+type PromisedType<T, A> = (() => Promise<T>) | ((args: A) => Promise<void>);
+
+export function useJar<T, A = unknown>(promised: () => Promise<T>, initialData?: T): Jar<T> {
     const [isPending, startTransition] = useTransition();
     const [promise, setPromise] = useState<Promise<T>>(new Promise(() => {}));
     const cacheJar = useJarCache<T>(initialData ?? ({} as T));
@@ -35,11 +37,19 @@ export function useJar<T>(promised: () => Promise<T>, initialData?: T): Jar<T> {
     }, [cacheJar, isPending, networkState, promised]);
 
     useEffect(() => {
+        (async () => {
+            if (await cacheJar.hasData()) {
+                setPromise(cacheJar.getData());
+            }
+            return;
+        })();
+
         if (initialData) {
             setPromise(Promise.resolve(initialData));
-        } else {
-            refresh();
+            return;
         }
+
+        refresh();
     }, []);
 
     return { isRefreshing: isPending, refresh, data: promise };

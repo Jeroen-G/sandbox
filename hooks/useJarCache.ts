@@ -3,6 +3,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 export function useJarCache<T>(initialData: T): {
     getData: () => Promise<T>;
     storeData: (value: T) => Promise<void>;
+    hasData: () => Promise<boolean>;
 } {
     const storeData = async (value: T) => {
         const jsonValue = JSON.stringify(value);
@@ -14,5 +15,9 @@ export function useJarCache<T>(initialData: T): {
         return jsonValue != null ? JSON.parse(jsonValue) : initialData;
     };
 
-    return { storeData, getData };
+    const hasData = async () => {
+        return !!(await AsyncStorage.getItem('my-key'));
+    };
+
+    return { storeData, getData, hasData };
 }

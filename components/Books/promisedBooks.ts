@@ -8,6 +8,13 @@ type BookResponse = {
     };
 };
 
+export async function postBooks(books: Book[]): Promise<void> {
+    await fetch('https://httpbin.org/anything', {
+        method: 'POST',
+        body: JSON.stringify({ books: books }),
+    });
+}
+
 export async function promisedBooks(): Promise<Book[]> {
     console.log('calling promisedBooks');
     const fallback = [{ title: 'Stone' }, { title: 'Chamber' }, { title: 'Azkaban' }];
